@@ -4,12 +4,17 @@ import { Ionicons } from '@expo/vector-icons';
 import { Logo } from '../../components/logo';
 import { FoodList } from '../../components/foodList';
 
+import { Text as MotiText, View as MotiView } from 'moti'
+
 import api from '../../services/api'
 
-export function Home(){
+import { useNavigation } from '@react-navigation/native';
 
+export function Home(){
     const [inputValue, setInputValue] = useState('')
     const [foods, setFoods] = useState([])
+
+    const navigation = useNavigation();
 
     useEffect(() => {
         async function fetchApi(){
@@ -21,15 +26,58 @@ export function Home(){
     }, [])
 
     function handleSearch(){
-        alert(`Você digitou: ${inputValue}`)
+        if(!inputValue) return;
+
+        let input = inputValue
+
+        navigation.navigate("Search", { name:input })
+        
+        setInputValue('')
     }
 
     return(
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView style={styles.container}> 
             <Logo/>
 
-            <Text style={styles.title}>Encontre a receita</Text>
-            <Text style={styles.title}>que combine com você!</Text>
+            <MotiText 
+            style={styles.title}
+            from={{
+                opacity:0,
+                translateY: 15,
+                
+            }}
+            animate={{
+                opacity: 1,
+                translateY: 0
+            }}
+            transition={{
+                delay: 100,
+                type: 'timing',
+                duration: 650
+            }}
+            >
+                Encontre a receita
+            </MotiText>
+
+            <MotiText 
+            style={styles.title}
+            from={{
+                opacity:0,
+                translateY: 15,
+                
+            }}
+            animate={{
+                opacity: 1,
+                translateY: 0
+            }}
+            transition={{
+                delay: 200,
+                type: 'timing',
+                duration: 850
+            }}
+            >
+                que combine com você!
+            </MotiText>
 
             <View style={styles.form}>
                 <TextInput 
@@ -49,8 +97,6 @@ export function Home(){
                     />
                 </TouchableOpacity>
             </View>
-            <Text style={styles.saida}>{ inputValue }</Text>
-
             <FlatList
                 data={ foods }
                 keyExtractor={(item) => String(item.id) }
@@ -99,9 +145,5 @@ const styles = StyleSheet.create({
         width: '90%',
         height: 54,
         maxWidth: '90%'
-    },
-    saida: {
-        fontSize: 21,
-        color:'#d6d6d6'
     }
 })

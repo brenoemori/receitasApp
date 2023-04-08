@@ -1,20 +1,72 @@
-import { StyleSheet, Text, View, SafeAreaView } from 'react-native';
+import { useState, useEffect } from 'react'
+import { StyleSheet, Text, View, SafeAreaView, FlatList } from 'react-native';
+import { getFavorites } from '../../utils/storage';
+import { useIsFocused } from '@react-navigation/native';
+import { FoodList } from '../../components/foodList'
+
+
 
 export function Favorites(){
+
+    const [receipes, setReceipes] = useState([])
+    const isFocused = useIsFocused()
+
+    useEffect(() => {
+
+        let isActive = true
+
+        async function getReceipes(){
+            const result = await getFavorites("@appreceitas")
+            if (isActive){
+                setReceipes(result)
+            }
+        }
+
+        if(isActive){
+            getReceipes();
+        }
+
+        return () => {
+            console.log('SAIU DA TELA')
+            isActive = false
+        }
+
+    }, [ isFocused ])
+
+
+
     return(
         <SafeAreaView style={styles.container}>
-            <Text>
-            Favorites Page!
-            </Text>
-            <Text>
-                Testando página favoritos
-            </Text>
+            <Text style={styles.title}>Receitas Favoritas</Text>
+
+
+            {receipes.length === 0 && (
+                <Text>Você ainda não tem nenhuma receita salva</Text>
+            )}
+
+            <FlatList
+                showsHorizontalScrollIndicator={false}
+                style={{marginTop: 14}}
+                data={receipes}
+                keyExtractor={(item) => String(item.id)}
+                renderItem={({item}) => <FoodList data={item}/>}
+            />
+
         </SafeAreaView>
     )
 }
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor:'orange'
+        backgroundColor:'#F3F9FF',
+        flex: 1,
+        paddingStart: 14,
+        paddingEnd: 14,
+        paddingTop: 36
+    },
+    title: {
+        color: '#000000',
+        fontWeight: 'bold',
+        fontSize: 26
     }
 })
